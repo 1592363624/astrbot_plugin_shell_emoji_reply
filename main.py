@@ -11,7 +11,7 @@ from astrbot.api.star import Context, Star, register
     "astrbot_plugin_shell_emoji_reply",
     "Shell",
     "为指定QQ号的消息自动添加表情回应",
-    "1.0.1",
+    "1.0.2",
     "https://github.com/1592363624/astrbot_plugin_shell_emoji_reply"
 )
 class AdminEmojiReply(Star):
@@ -176,7 +176,7 @@ class AdminEmojiReply(Star):
             return
 
         # 判断是否随机选择表情
-        if self.config.get("RandomEmoji", True):
+        if self.config.get("RandomEmoji", True) or self.config.get("GlobalRandomExpression", True):
             import random
             selected_emoji = random.choice(emoji_ids_to_send)
             emoji_ids_to_send = [selected_emoji]
