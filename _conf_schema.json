@@ -27,6 +27,20 @@
     "hint": "启用后，只有在指定QQ中发送的表情才会被自动回复。",
     "obvious_hint": true
   },
+  "RandomEmoji": {
+    "description": "是否随机选择表情进行回复。",
+    "type": "bool",
+    "default": true,
+    "hint": "启用后，每次回应时会从配置的表情列表中随机选取一个表情发送。",
+    "obvious_hint": false
+  },
+  "GlobalRandomExpression": {
+    "description": "是否全局随机选择表情进行回复。",
+    "type": "bool",
+    "default": true,
+    "hint": "启用后，每次回应时会从所有配置的表情列表中随机选取一个表情发送。",
+    "obvious_hint": false
+  },
   "reply_delay": {
     "description": "设置每个表情回应之间的延迟时间（秒）。",
     "type": "float",

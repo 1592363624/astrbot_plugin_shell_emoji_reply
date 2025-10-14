@@ -11,7 +11,7 @@ from astrbot.api.star import Context, Star, register
     "astrbot_plugin_shell_emoji_reply",
     "Shell",
     "为指定QQ号的消息自动添加表情回应",
-    "1.0.0",
+    "1.0.1",
     "https://github.com/1592363624/astrbot_plugin_shell_emoji_reply"
 )
 class AdminEmojiReply(Star):
@@ -111,6 +111,7 @@ class AdminEmojiReply(Star):
         enable_group_filter = self.config.get("EnableGroupChatFiltering", False)
         enable_qq_filter = self.config.get("EnableQQChatFiltering", False)
 
+
         # 如果启用了过滤，则检查过滤条件
         if enable_group_filter or enable_qq_filter:
             target_groups = self.config.get("target_groups", [])
@@ -141,13 +142,21 @@ class AdminEmojiReply(Star):
 
         # 6. 解析表情配置，将中文名或Emoji字符转换为可用的表情ID
         emoji_ids_to_send = []
-        for emoji_str in emoji_configs:
-            if not isinstance(emoji_str, str):
-                logger.warning(f"配置的表情 '{emoji_str}' 不是一个有效字符串，已跳过。")
+
+        # 判断是否使用全局随机表情
+        use_global_random = self.config.get("GlobalRandomExpression", True)
+        emoji_source = list(self.EMOJI_NAME_TO_ID_MAP.values()) if use_global_random else emoji_configs
+
+        for emoji_str in emoji_source:
+            if not isinstance(emoji_str, str) and not isinstance(emoji_str, int):
+                logger.warning(f"配置的表情 '{emoji_str}' 不是一个有效字符串或数字，已跳过。")
                 continue
 
+            # 如果是数字(全局随机模式)，直接使用
+            if isinstance(emoji_str, int):
+                emoji_ids_to_send.append(str(emoji_str))
             # 优先在映射表中查找中文名
-            if emoji_str in self.EMOJI_NAME_TO_ID_MAP:
+            elif emoji_str in self.EMOJI_NAME_TO_ID_MAP:
                 emoji_ids_to_send.append(str(self.EMOJI_NAME_TO_ID_MAP[emoji_str]))
             # 如果是单个字符，则尝试作为Unicode Emoji处理
             elif len(emoji_str) == 1:
@@ -166,30 +175,28 @@ class AdminEmojiReply(Star):
         if not emoji_ids_to_send:
             return
 
+        # 判断是否随机选择表情
+        if self.config.get("RandomEmoji", True):
+            import random
+            selected_emoji = random.choice(emoji_ids_to_send)
+            emoji_ids_to_send = [selected_emoji]
+
         # 7. 顺序执行表情回应
         try:
             client = event.bot
             message_id = event.message_obj.message_id
 
-            # 创建所有API调用的协程
-            tasks_to_run = [
-                client.api.call_action('set_msg_emoji_like', message_id=message_id, emoji_id=emoji_id)
-                for emoji_id in emoji_ids_to_send
-            ]
-
-            if tasks_to_run:
+            # 创建API调用的协程
+            if emoji_ids_to_send:
                 # 从配置中获取延迟时间
                 delay = self.config.get("reply_delay", 0.3)
-                # 使用for循环和await确保按顺序执行
-                for i, task_coro in enumerate(tasks_to_run):
+                for emoji_id in emoji_ids_to_send:
                     try:
-                        await task_coro
-                        # 如果设置了延迟，则在每次成功调用后等待
-                        if delay > 0 and i < len(tasks_to_run) - 1:
+                        await client.api.call_action('set_msg_emoji_like', message_id=message_id, emoji_id=emoji_id)
+                        if delay > 0:
                             await asyncio.sleep(delay)
                     except Exception as res:
-                        # 捕获单个表情回应的失败，并记录日志，不中断后续表情的回应
-                        logger.error(f"为表情ID {emoji_ids_to_send[i]} 添加回应失败: {res}")
+                        logger.error(f"为表情ID {emoji_id} 添加回应失败: {res}")
 
         except Exception as e:
             logger.error(f"添加表情回应时发生未知错误: {e}")
