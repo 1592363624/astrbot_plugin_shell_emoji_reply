@@ -1,16 +1,18 @@
 import asyncio
 import json
 from pathlib import Path
+
+from astrbot.api import logger, AstrBotConfig
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, register
-from astrbot.api import logger, AstrBotConfig
+
 
 @register(
-    "astrbot_plugin_admin_emoji_reply",
-    "EraAsh",
+    "astrbot_plugin_shell_emoji_reply",
+    "Shell",
     "为指定QQ号的消息自动添加表情回应",
-    "1.7.0",
-    "https://github.com/EraAsh/astrbot_plugin_admin_emoji_reply"
+    "1.0.0",
+    "https://github.com/1592363624/astrbot_plugin_shell_emoji_reply"
 )
 class AdminEmojiReply(Star):
     """
@@ -56,7 +58,7 @@ class AdminEmojiReply(Star):
         super().__init__(context)
         self.config = config
         # 设置数据目录并确保其存在
-        self.data_dir = Path("data/plugins/astrbot_plugin_admin_emoji_reply")
+        self.data_dir = Path("data/plugins/astrbot_plugin_shell_emoji_reply")
         self.data_dir.mkdir(parents=True, exist_ok=True)
         # 定义状态持久化文件路径
         self.status_file = self.data_dir / "status.json"
@@ -105,20 +107,29 @@ class AdminEmojiReply(Star):
         if not self.enabled:
             return
 
-        # 2. 检查配置中是否设置了目标QQ
-        target_qq_list = self.config.get("target_qq_ids", [])
-        if not target_qq_list:
-            return
+        # 2. 检查群聊过滤和QQ指定
+        enable_group_filter = self.config.get("EnableGroupChatFiltering", False)
+        enable_qq_filter = self.config.get("EnableQQChatFiltering", False)
 
-        # 3. 检查消息发送者是否在目标列表中
-        sender_id = event.get_sender_id()
-        if not sender_id or str(sender_id) not in target_qq_list:
+        # 如果启用了过滤，则检查过滤条件
+        if enable_group_filter or enable_qq_filter:
+            target_groups = self.config.get("target_groups", [])
+            group_id = event.get_group_id()
+            if not group_id or str(group_id) not in target_groups:
+                # 如果启用了QQ过滤，则检查QQ号
+                if enable_qq_filter:
+                    target_qq_list = self.config.get("target_qq_ids", [])
+                    sender_id = event.get_sender_id()
+                    if not sender_id or str(sender_id) not in target_qq_list:
+                        return
+        # 如果两者都未启用，则默认不处理所有消息
+        else:
             return
 
         # 4. 确保当前平台是 aiocqhttp (NapCat)，因为该API是平台特有的
         if event.get_platform_name() != "aiocqhttp":
             return
-            
+
         from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
         if not isinstance(event, AiocqhttpMessageEvent):
             return
@@ -134,7 +145,7 @@ class AdminEmojiReply(Star):
             if not isinstance(emoji_str, str):
                 logger.warning(f"配置的表情 '{emoji_str}' 不是一个有效字符串，已跳过。")
                 continue
-            
+
             # 优先在映射表中查找中文名
             if emoji_str in self.EMOJI_NAME_TO_ID_MAP:
                 emoji_ids_to_send.append(str(self.EMOJI_NAME_TO_ID_MAP[emoji_str]))
@@ -159,13 +170,13 @@ class AdminEmojiReply(Star):
         try:
             client = event.bot
             message_id = event.message_obj.message_id
-            
+
             # 创建所有API调用的协程
             tasks_to_run = [
                 client.api.call_action('set_msg_emoji_like', message_id=message_id, emoji_id=emoji_id)
                 for emoji_id in emoji_ids_to_send
             ]
-            
+
             if tasks_to_run:
                 # 从配置中获取延迟时间
                 delay = self.config.get("reply_delay", 0.3)

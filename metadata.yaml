@@ -1,5 +1,5 @@
-name: astrbot_plugin_admin_emoji_reply
-author: EraAsh
+name: astrbot_plugin_shell_emoji_reply
+author: Shell
 desc: 自动为指定的用户回复表情消息，支持开关和自定义速度
-version: v1.7.0
-repo: https://github.com/EraAsh/astrbot_plugin_admin_emoji_reply
+version: v1.0.0
+repo: https://github.com/1592363624/astrbot_plugin_shell_emoji_reply

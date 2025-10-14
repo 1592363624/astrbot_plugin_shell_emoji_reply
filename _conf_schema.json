@@ -6,6 +6,27 @@
     "hint": "点击添加新项，输入QQ号后按回车确认。留空则禁用此功能。",
     "obvious_hint": true
   },
+  "target_groups": {
+    "description": "设置需要被自动回复表情的群聊列表。",
+    "type": "list",
+    "default": [],
+    "hint": "点击添加新项，输入群聊号后按回车确认。留空则对所有群聊生效。",
+    "obvious_hint": true
+  },
+  "EnableGroupChatFiltering": {
+    "description": "是否启用群聊过滤功能。",
+    "type": "bool",
+    "default": false,
+    "hint": "启用后，只有在指定群聊中发送的表情才会被自动回复。",
+    "obvious_hint": true
+  },
+  "EnableQQChatFiltering": {
+    "description": "是否启用QQ过滤功能。",
+    "type": "bool",
+    "default": false,
+    "hint": "启用后，只有在指定QQ中发送的表情才会被自动回复。",
+    "obvious_hint": true
+  },
   "reply_delay": {
     "description": "设置每个表情回应之间的延迟时间（秒）。",
     "type": "float",
