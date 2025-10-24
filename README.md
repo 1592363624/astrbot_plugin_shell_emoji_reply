@@ -1,5 +1,7 @@
 # Admin Emoji Reply - 自动表情回应插件
 
+![:shell](https://count.getloli.com/@github_monitor_shell?name=github_monitor_shell&theme=minecraft&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
+
 这是一个为 [AstrBot](https://github.com/Soulter/AstrBot) 设计的插件，它可以自动为你配置的指定QQ用户的消息添加一个或多个表情回应。
 
 ## ✨ 功能
@@ -58,3 +60,4 @@
 ---
 
 如果你觉得这个插件好用，不妨去 [GitHub 仓库](https://github.com/EraAsh/astrbot_plugin_admin_emoji_reply) 点个 Star 吧！你的支持是我更新的最大动力！
+
