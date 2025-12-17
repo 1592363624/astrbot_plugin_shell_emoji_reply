@@ -1,5 +1,6 @@
 name: astrbot_plugin_shell_emoji_reply
+display_name: 自动添加表情回应
 author: Shell
 desc: 自动为指定的用户回复表情消息，支持开关和自定义速度
-version: v1.0.2
+version: v1.0.3
 repo: https://github.com/1592363624/astrbot_plugin_shell_emoji_reply

@@ -11,7 +11,7 @@ from astrbot.api.star import Context, Star, register
     "astrbot_plugin_shell_emoji_reply",
     "Shell",
     "为指定QQ号的消息自动添加表情回应",
-    "1.0.2",
+    "1.0.3",
     "https://github.com/1592363624/astrbot_plugin_shell_emoji_reply"
 )
 class AdminEmojiReply(Star):

@@ -57,7 +57,8 @@
 ### v1.5.0
 - **功能修正**: 修复了表情回应顺序与配置不一致的问题。
 
----
+## 🐔 联系作者
 
-如果你觉得这个插件好用，不妨去 [GitHub 仓库](https://github.com/EraAsh/astrbot_plugin_admin_emoji_reply) 点个 Star 吧！你的支持是我更新的最大动力！
-
+- **反馈**：欢迎在 [GitHub Issues](https://github.com/1592363624/astrbot_plugin_zanwo_shell/issues) 提交问题或建议
+QQ群:91219736
+telegram:[巅峰阁](https://t.me/ShellDFG)
